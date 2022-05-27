@@ -1,4 +1,6 @@
+//import logo from './logo.svg';
 import './App.css';
+import {useState} from 'react'; //state 훅 리액트에서 제공하는 기본 함수
 function Header(props){ //사용자 정의 태그 = 컴포넌트
   console.log('props',props, props.title);
   return <header>
@@ -15,8 +17,9 @@ function Nav(props){
     lis.push(<li key={t.id}>
       <a id={t.id} href={'/read/'+t.id} onClick={event=>{
         event.preventDefault();
-        props.onChangeMode(event.target.id);
-      }}>{t.title}</a></li>)
+        props.onChangeMode(Number(event.target.id)); //문자를 숫자로 컨버팅해주는 함수
+      }}>{t.title}</a>
+    </li>)
   }
   return <nav>
     <ol>
@@ -32,21 +35,40 @@ function Article(props){
   </article>
 }
 function App() {
+  //const _mode = useState('WELCOME'); // state(상태를 만드는 코딩)
+  //const mode = _mode[0];
+  //const setMode = _mode[1];
+  const [mode, setMode] = useState('WELCOME');
+  const [id, setId] = useState(null);
   const topics = [
     {id:1, title: 'html', body:'html is ...'},
     {id:2, title: 'css', body:'css is ...'},
     {id:3, title: 'javascript', body:'javascript is ...'}
   ]
+  let content = null;
+  if(mode === 'WELCOME'){
+    content = <Article title="Welcome" body="Hello, WEB"></Article>
+  } else if(mode === 'READ'){
+    let title, body = null; //title, body 값을 초기화
+    for(let i = 0; i < topics.length; i++){
+      console.log(topics[i].id, id);
+      if(topics[i].id === id){
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = <Article title={title} body={body}></Article>
+  }
   return ( //컴퍼넌트로 만들었음.
     <div>
       <Header title="WEB" onChangeMode={()=>{
-        alert('Header'); 
+        setMode('WELCOME');
       }}></Header>
-      <Nav topics ={topics} onChangeMode={(id)=>{
-        alert(id);
+      <Nav topics ={topics} onChangeMode={(_id)=>{
+        setMode('READ');
+        setId(_id);
       }}></Nav>
-      <Article title="Welcome" body="Hello, WEB"></Article>
-      <Article title="Hi" body="Bye"></Article>
+      {content}
     </div>
   );
 }
@@ -60,5 +82,5 @@ export default App;
 함수를 정의해서 만들면 된다. 
 props는 리액트에서 속성을 의미한다.
 리액트는 자동으로 생성한 태그의 경우에는 key라는 약속된 prop을 준다.
-
+prop은 외부자를 위한 데이터 state는 내부자를 위한 데이터 
 */ 
